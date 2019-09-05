@@ -17,7 +17,10 @@ dependencies:
   path_provider: ^1.2.0
   pedantic: ^1.7.0
   device_info: ^0.4.0+2
-  camera: ^0.5.4+1
+  camera:
+    git:
+      url: 'git@github.com:g123k/plugins.git'
+      path: 'packages/camera'
 
 dev_dependencies:
   flutter_test:
