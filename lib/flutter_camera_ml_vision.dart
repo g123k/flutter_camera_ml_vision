@@ -39,17 +39,19 @@ class CameraMlVision<T> extends StatefulWidget {
   final WidgetBuilder overlayBuilder;
   final CameraLensDirection cameraLensDirection;
   final ResolutionPreset resolution;
+  final CameraController controller;
 
-  CameraMlVision({
-    Key key,
-    @required this.onResult,
-    this.detector,
-    this.loadingBuilder,
-    this.errorBuilder,
-    this.overlayBuilder,
-    this.cameraLensDirection = CameraLensDirection.back,
-    this.resolution,
-  }) : super(key: key);
+  CameraMlVision(
+      {Key key,
+      @required this.onResult,
+      this.detector,
+      this.loadingBuilder,
+      this.errorBuilder,
+      this.overlayBuilder,
+      this.cameraLensDirection = CameraLensDirection.back,
+      this.resolution,
+      this.controller})
+      : super(key: key);
 
   @override
   CameraMlVisionState createState() => CameraMlVisionState<T>();
@@ -91,6 +93,18 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>> {
 
       await _stop(false);
     }
+  }
+
+  Future<bool> hasFlash() {
+    return _cameraController.hasTorch;
+  }
+
+  Future<void> turnFlashOn() {
+    return _cameraController.torchOn();
+  }
+
+  Future<void> turnFlashOff() {
+    return _cameraController.torchOff();
   }
 
   void _stop(bool silently) {
@@ -167,11 +181,15 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>> {
 
       return;
     }
-    _cameraController = CameraController(
-      description,
-      widget.resolution ?? ResolutionPreset.low, // As the doc says, better to set low when streaming images to avoid drop frames on older devices
-      enableAudio: false,
-    );
+
+    _cameraController = widget.controller ??
+        CameraController(
+          description,
+          widget.resolution ??
+              ResolutionPreset
+                  .low, // As the doc says, better to set low when streaming images to avoid drop frames on older devices
+          enableAudio: false,
+        );
     if (!mounted) {
       return;
     }
@@ -195,7 +213,9 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>> {
       description.sensorOrientation,
     );
 
-    await Future.delayed(Duration(milliseconds: 200));//hacky technique to avoid having black screen on some android devices
+    await Future.delayed(Duration(
+        milliseconds:
+            200)); //hacky technique to avoid having black screen on some android devices
     start();
   }
 
