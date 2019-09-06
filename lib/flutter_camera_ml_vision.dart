@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
-import 'package:device_info/device_info.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -141,6 +140,7 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>> {
   }
 
   CameraValue get cameraValue => _cameraController?.value;
+
   ImageRotation get imageRotation => _rotation;
 
   Future<void> Function() get prepareForVideoRecording =>
@@ -160,19 +160,6 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>> {
       _cameraController.takePicture;
 
   Future<void> _initialize() async {
-    if (Platform.isAndroid) {
-      final deviceInfo = DeviceInfoPlugin();
-      final androidInfo = await deviceInfo.androidInfo;
-      if (androidInfo.version.sdkInt < 21) {
-        debugPrint('Camera plugin doesn\'t support android under version 21');
-        setState(() {
-          _cameraMlVisionState = _CameraState.error;
-          _cameraError = CameraError.androidVersionNotSupported;
-        });
-        return;
-      }
-    }
-
     CameraDescription description =
         await _getCamera(widget.cameraLensDirection);
     if (description == null) {
@@ -185,11 +172,11 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>> {
     _cameraController = widget.controller ??
         CameraController(
           description,
-          widget.resolution ??
-              ResolutionPreset
-                  .low, // As the doc says, better to set low when streaming images to avoid drop frames on older devices
+          widget.resolution ?? ResolutionPreset.low,
+          // As the doc says, better to set low when streaming images to avoid drop frames on older devices
           enableAudio: false,
         );
+
     if (!mounted) {
       return;
     }
@@ -239,9 +226,13 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>> {
     if (_lastImage != null && File(_lastImage).existsSync()) {
       File(_lastImage).delete();
     }
+
     if (_cameraController != null) {
+      _cameraController.torchOff();
       _cameraController.dispose();
+      _cameraController = null;
     }
+
     super.dispose();
   }
 
