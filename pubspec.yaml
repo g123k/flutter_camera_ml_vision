@@ -14,13 +14,14 @@ dependencies:
   flutter:
     sdk: flutter
   firebase_ml_vision: ^0.8.0+3
-  path_provider: ^1.2.0
-  pedantic: ^1.7.0
-  device_info: ^0.4.0+2
+  path_provider: ^1.4.2
+  pedantic: ^1.8.0+1
+  device_info: ^0.4.1+1
   camera:
     git:
-      url: 'git@github.com:g123k/plugins.git'
+      url: 'git@github.com:NeKoFu/plugins.git'
       path: 'packages/camera'
+      ref: 'camera_torch'
 
 dev_dependencies:
   flutter_test:

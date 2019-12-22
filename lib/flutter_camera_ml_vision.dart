@@ -95,15 +95,15 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>> {
   }
 
   Future<bool> hasFlash() {
-    return _cameraController.hasTorch;
+    return _cameraController.hasFlash;
   }
 
   Future<void> turnFlashOn() {
-    return _cameraController.torchOn();
+    return _cameraController.setFlash(mode: FlashMode.torch);
   }
 
   Future<void> turnFlashOff() {
-    return _cameraController.torchOff();
+    return _cameraController.setFlash(mode: FlashMode.off);
   }
 
   void _stop(bool silently) {
@@ -228,7 +228,7 @@ class CameraMlVisionState<T> extends State<CameraMlVision<T>> {
     }
 
     if (_cameraController != null) {
-      _cameraController.torchOff();
+      _cameraController.setFlash(mode: FlashMode.off);
       _cameraController.dispose();
       _cameraController = null;
     }
